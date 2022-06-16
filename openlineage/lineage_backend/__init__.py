@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-
+import os
 import uuid
 import time
 
@@ -7,6 +7,7 @@ from pkg_resources import parse_version
 
 from airflow.lineage.backend import LineageBackend
 from airflow.version import version as AIRFLOW_VERSION
+from typing import Optional
 
 
 class Backend:
@@ -81,12 +82,15 @@ class Backend:
 class OpenLineageBackend(LineageBackend):
     # Airflow 1.10 uses send_lineage as staticmethod, so just construct class
     # instance on first use and delegate calls to it
-    backend: Backend = None
+    backend: Optional[Backend] = None
 
     @classmethod
     def send_lineage(cls, *args, **kwargs):
         # Do not use LineageBackend approach when we can use plugins
         if parse_version(AIRFLOW_VERSION) >= parse_version("2.3.0.dev0"):
+            return
+        # Make this method a noop if OPENLINEAGE_DISABLED is set to true
+        if os.getenv("OPENLINEAGE_DISABLED", None) in [True, 'true', "True"]:
             return
         if not cls.backend:
             cls.backend = Backend()

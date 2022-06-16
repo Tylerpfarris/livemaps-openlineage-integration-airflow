@@ -1,6 +1,7 @@
 import logging
 import threading
 import uuid
+
 import attr
 
 from typing import TYPE_CHECKING, Optional, Callable
@@ -29,6 +30,7 @@ class ActiveRunManager:
     we're only running on worker - in separate process that is always spawned (or forked) on
     execution, just like old PHP runtime model.
     """
+
     def __init__(self):
         self.run_data = {}
 
@@ -43,9 +45,6 @@ class ActiveRunManager:
         return ti.dag_id + ti.task_id + ti.run_id
 
 
-run_data_holder = ActiveRunManager()
-extractor_manager = ExtractorManager()
-adapter = OpenLineageAdapter()
 log = logging.getLogger('airflow')
 
 
@@ -58,18 +57,29 @@ def execute_in_thread(target: Callable, kwargs=None):
         daemon=True
     )
     thread.start()
+
     # Join, but ignore checking if thread stopped. If it did, then we shoudn't do anything.
-    # This basically gives this thread 2 seconds to complete work, then it can be killed,
+    # This basically gives this thread 5 seconds to complete work, then it can be killed,
     # as daemon=True. We don't want to deadlock Airflow if our code hangs.
-    thread.join(timeout=2)
+
+    # This will hang if this timeouts, and extractor is running non-daemon thread inside,
+    # since it will never be cleaned up. Ex. SnowflakeOperator
+    thread.join(timeout=10)
+
+
+run_data_holder = ActiveRunManager()
+extractor_manager = ExtractorManager()
+adapter = OpenLineageAdapter()
 
 
 @hookimpl
 def on_task_instance_running(previous_state, task_instance: "TaskInstance", session: "Session"):
     if not hasattr(task_instance, 'task'):
-        log.warning(f"No task set for TI object task_id: {task_instance.task_id} - dag_id: {task_instance.dag_id} - run_id {task_instance.run_id}")  # noqa
+        log.warning(
+            f"No task set for TI object task_id: {task_instance.task_id} - dag_id: {task_instance.dag_id} - run_id {task_instance.run_id}")  # noqa
         return
 
+    log.debug("OpenLineage listener got notification about task instance start")
     dagrun = task_instance.dag_run
     task = task_instance.task
     dag = task_instance.task.dag
@@ -97,15 +107,17 @@ def on_task_instance_running(previous_state, task_instance: "TaskInstance", sess
                 **get_custom_facets(task_instance, dagrun.external_trigger)
             }
         )
+
     execute_in_thread(on_running)
 
 
 @hookimpl
 def on_task_instance_success(previous_state, task_instance: "TaskInstance", session):
+    log.debug("OpenLineage listener got notification about task instance success")
     run_data = run_data_holder.get_active_run(task_instance)
 
     dagrun = task_instance.dag_run
-    task = run_data.task
+    task = run_data.task if run_data else None
 
     def on_success():
         task_metadata = extractor_manager.extract_metadata(
@@ -117,15 +129,17 @@ def on_task_instance_success(previous_state, task_instance: "TaskInstance", sess
             end_time=DagUtils.to_iso_8601(task_instance.end_date),
             task=task_metadata
         )
+
     execute_in_thread(on_success)
 
 
 @hookimpl
 def on_task_instance_failed(previous_state, task_instance: "TaskInstance", session):
+    log.debug("OpenLineage listener got notification about task instance failure")
     run_data = run_data_holder.get_active_run(task_instance)
 
     dagrun = task_instance.dag_run
-    task = run_data.task
+    task = run_data.task if run_data else None
 
     def on_failure():
         task_metadata = extractor_manager.extract_metadata(
@@ -138,4 +152,5 @@ def on_task_instance_failed(previous_state, task_instance: "TaskInstance", sessi
             end_time=DagUtils.to_iso_8601(task_instance.end_date),
             task=task_metadata
         )
+
     execute_in_thread(on_failure)

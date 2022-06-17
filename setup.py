@@ -9,7 +9,7 @@ from setuptools import setup, find_namespace_packages
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-__version__ = "0.10.0"
+__version__ = "0.9.0"
 
 requirements = [
     "attrs>=19.3",
@@ -26,10 +26,10 @@ extras_require = {
         "mock",
         "flake8",
         "mypy>=0.9.6",
-        "SQLAlchemy",       # must be set to 1.3.* for airflow tests compatibility
+        "SQLAlchemy",  # must be set to 1.3.* for airflow tests compatibility
         "Flask-SQLAlchemy",  # must be set to 2.4.* for airflow tests compatibility
-        "pandas-gbq==0.14.1",       # must be set to 0.14.* for airflow tests compatibility
-        "snowflake-connector-python"
+        "pandas-gbq==0.14.1",  # must be set to 0.14.* for airflow tests compatibility
+        "snowflake-connector-python",
     ],
     "airflow-1": [
         "apache-airflow[gcp_api,google,postgres,mysql]==1.10.15",
@@ -54,7 +54,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     author="OpenLineage",
-    packages=find_namespace_packages(include=['openlineage.*']),
+    packages=find_namespace_packages(include=["openlineage.*"]),
     include_package_data=True,
     install_requires=requirements,
     extras_require=extras_require,
@@ -62,6 +62,8 @@ setup(
     zip_safe=False,
     keywords="openlineage",
     entry_points={
-        "airflow.plugins": ["OpenLineagePlugin = openlineage.airflow.plugin:OpenLineagePlugin"]
-    }
+        "airflow.plugins": [
+            "OpenLineagePlugin = openlineage.airflow.plugin:OpenLineagePlugin"
+        ]
+    },
 )

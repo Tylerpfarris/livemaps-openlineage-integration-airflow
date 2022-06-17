@@ -7,7 +7,7 @@ from typing import Callable, List, Optional
 from openlineage.airflow.extractors.base import BaseExtractor, TaskMetadata
 from openlineage.client.run import Dataset
 from openlineage.client.facet import SourceCodeJobFacet
-from openlineage.integration.common.openlineage.common.provider.livemaps import (
+from openlineage.common.provider.livemaps import (
     LiveMapsPythonDecoratedFacet,
 )
 from openlineage.client.python.openlineage.common.constants import (

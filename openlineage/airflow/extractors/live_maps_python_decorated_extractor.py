@@ -36,6 +36,7 @@ class LiveMapsPythonDecoratedExtractor(BaseExtractor):
             "PythonDecoratedOperator",
             "DecoratedOperator",
             "Python_Operator",
+            "PostgresOperator",
         ]
 
     def extract(self) -> Optional[TaskMetadata]:

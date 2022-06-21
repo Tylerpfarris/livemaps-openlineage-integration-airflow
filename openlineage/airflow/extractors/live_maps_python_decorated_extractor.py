@@ -31,7 +31,12 @@ class LiveMapsPythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
         log.info(cls)
-        return ["_PythonDecoratedOperator", "PythonDecoratedOperator"]
+        return [
+            "_PythonDecoratedOperator",
+            "PythonDecoratedOperator",
+            "DecoratedOperator",
+            "Python_Operator",
+        ]
 
     def extract(self) -> Optional[TaskMetadata]:
         log.info(self)

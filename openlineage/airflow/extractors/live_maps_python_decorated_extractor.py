@@ -26,9 +26,11 @@ if not _DAG_NAMESPACE:
 class LiveMapsPythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
-        return ["_PythonDecoratedOperator"]
+        log.info(cls)
+        return ["_PythonDecoratedOperator", "PythonDecoratedOperator"]
 
     def extract(self) -> Optional[TaskMetadata]:
+        log.info(self)
         if os.environ.get("OPENLINEAGE_LIVE_MAPS", True).lower() in (
             "true",
             "1",

@@ -24,6 +24,10 @@ if not _DAG_NAMESPACE:
 
 
 class LiveMapsPythonDecoratedExtractor(BaseExtractor):
+    def __init__(self, operator):
+        super().__init__(operator)
+        self.conn = None
+
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
         log.info(cls)

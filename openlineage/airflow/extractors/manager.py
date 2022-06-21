@@ -22,6 +22,9 @@ class ExtractorManager:
         self.log = logging.getLogger()
 
     def add_extractor(self, operator, extractor: Type[BaseExtractor]):
+        self.log.info(self)
+        self.log.info(operator)
+        self.log.info(extractor)
         self.task_to_extractor.add_extractor(operator, extractor)
 
     def extract_metadata(

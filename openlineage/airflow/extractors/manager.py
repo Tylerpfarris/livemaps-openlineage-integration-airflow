@@ -37,7 +37,9 @@ class ExtractorManager:
             f"task_id={task.task_id} "
             f"airflow_run_id={dagrun.run_id} "
         )
-        self.log.info(self)
+        self.log.info(extractor)
+        self.log.info(task_info)
+        self.log.info(help(self))
         if extractor:
             # Extracting advanced metadata is only possible when extractor for particular operator
             # is defined. Without it, we can't extract any input or output data.
@@ -84,8 +86,8 @@ class ExtractorManager:
         return TaskMetadata(name=get_job_name(task))
 
     def _get_extractor(self, task) -> Optional[BaseExtractor]:
-        logging.info(self)
-        logging.info(task)
+        logging.info(help(self))
+        logging.info(help(task))
         if task.task_id in self.extractors:
             return self.extractors[task.task_id]
         extractor = self.task_to_extractor.get_extractor_class(task.__class__)

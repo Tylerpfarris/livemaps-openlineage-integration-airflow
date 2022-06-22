@@ -24,6 +24,9 @@ class LiveMapsPythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
         return [
+            "_PythonOperator",
+            "PythonOperator",
+            "PostgresOperator",
             "_PythonDecoratedOperator",
             "__PythonDecoratedOperator",
         ]

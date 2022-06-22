@@ -10,7 +10,7 @@ from openlineage.client.facet import SourceCodeJobFacet
 from openlineage.common.provider import (
     LiveMapsPythonDecoratedFacet,
 )
-from openlineage.client.python.openlineage.common.constants import (
+from openlineage.common.constants import (
     DEFAULT_NAMESPACE_NAME,
 )
 

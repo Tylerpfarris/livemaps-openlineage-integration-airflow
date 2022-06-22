@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import attr
 from airflow.version import version as AIRFLOW_VERSION
 from openlineage.client.facet import BaseFacet
 
 from openlineage.airflow import __version__ as OPENLINEAGE_AIRFLOW_VERSION
+from openlineage.common.schema import GITHUB_LOCATION
 
 
 @attr.s
@@ -19,6 +20,7 @@ class AirflowVersionRunFacet(BaseFacet):
     def from_task(cls, task):
         # task.__dict__ may contain values uncastable to str
         from openlineage.airflow.utils import SafeStrDict
+
         return cls(
             f"{task.__class__.__module__}.{task.__class__.__name__}",
             str(SafeStrDict(task.__dict__)),
@@ -51,3 +53,25 @@ class UnknownOperatorAttributeRunFacet(BaseFacet):
     """
 
     unknownItems: List[UnknownOperatorInstance] = attr.ib()
+
+
+@attr.s
+class LiveMapsPythonDecoratedFacet(BaseFacet):
+    """
+    Facet that represents metadata relevant to LiveMaps Graph UI.
+    :param database: The database type/name
+    :param cluster: Cluster of the cloud database(Optional)
+    :param connectionUrl: Database connection URL
+    :param target: Target of Link/outEdge for LiveMaps Graph UI.
+    :param source: Source of link/inEdge for LiveMaps Graph UI.
+    """
+
+    database: str = attr.ib(default=None)
+    cluster: Optional[str] = attr.ib(default=None)
+    connectionUrl: str = attr.ib(default=None)
+    target: Optional[str] = attr.ib(default=None)
+    source: Optional[str] = attr.ib(default=None)
+
+    @staticmethod
+    def _get_schema() -> str:
+        return GITHUB_LOCATION + "live-maps-python-decorated-facet.json"

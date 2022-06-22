@@ -85,7 +85,8 @@ class ExtractorManager:
         return TaskMetadata(name=get_job_name(task))
 
     def _get_extractor(self, task) -> Optional[BaseExtractor]:
-        logging.info(task)
+        logging.info(task.task_id)
+        logging.info(self.extractors)
         if task.task_id in self.extractors:
             return self.extractors[task.task_id]
         extractor = self.task_to_extractor.get_extractor_class(task.__class__)

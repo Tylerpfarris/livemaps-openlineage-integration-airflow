@@ -10,9 +10,6 @@ from openlineage.client.facet import SourceCodeJobFacet
 from openlineage.common.provider import (
     LiveMapsPythonDecoratedFacet,
 )
-from openlineage.common.constants import (
-    DEFAULT_NAMESPACE_NAME,
-)
 
 
 log = logging.getLogger(__name__)
@@ -20,17 +17,12 @@ log = logging.getLogger(__name__)
 
 _DAG_NAMESPACE = os.getenv("OPENLINEAGE_NAMESPACE", None)
 if not _DAG_NAMESPACE:
-    _DAG_NAMESPACE = os.getenv("MARQUEZ_NAMESPACE", DEFAULT_NAMESPACE_NAME)
+    _DAG_NAMESPACE = os.getenv("MARQUEZ_NAMESPACE", "default")
 
 
 class LiveMapsPythonDecoratedExtractor(BaseExtractor):
-    def __init__(self, operator):
-        super().__init__(operator)
-        self.conn = None
-
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
-        log.info(cls)
         return [
             "_PythonDecoratedOperator",
             "__PythonDecoratedOperator",

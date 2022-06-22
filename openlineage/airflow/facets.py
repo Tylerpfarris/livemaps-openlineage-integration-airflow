@@ -75,4 +75,4 @@ class LiveMapsPythonDecoratedFacet(BaseFacet):
 
     @staticmethod
     def _get_schema() -> str:
-        return GITHUB_LOCATION + "live-maps-python-decorated-facet.json"
+        return GITHUB_LOCATION + "live_maps_python_decorated_facet.json"

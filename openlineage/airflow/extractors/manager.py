@@ -25,6 +25,7 @@ class ExtractorManager:
         self.log.info(self)
         self.log.info(operator)
         self.log.info(extractor)
+        self.log.info(self.task_to_extractor)
         self.task_to_extractor.add_extractor(operator, extractor)
 
     def extract_metadata(

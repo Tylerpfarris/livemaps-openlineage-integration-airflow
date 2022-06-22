@@ -6,7 +6,8 @@ from airflow.version import version as AIRFLOW_VERSION
 from openlineage.client.facet import BaseFacet
 
 from openlineage.airflow import __version__ as OPENLINEAGE_AIRFLOW_VERSION
-from openlineage.common.schema import GITHUB_LOCATION
+
+GITHUB_LOCATION = "https://github.com/Tylerpfarris/OpenLineage/tree/feature/Live-Maps-Pyton-Decorated-Extractor/integration/common/openlineage/common/schema"  # noqa: E501
 
 
 @attr.s

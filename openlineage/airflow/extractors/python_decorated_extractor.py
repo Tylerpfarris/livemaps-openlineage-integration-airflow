@@ -29,12 +29,6 @@ class PythonDecoratedExtractor(BaseExtractor):
 
     def extract(self) -> Optional[TaskMetadata]:
         log.info(self)
-        if os.environ.get("OPENLINEAGE_LIVE_MAPS", True).lower() in (
-            "true",
-            "1",
-            "t",
-        ):
-            log.info("OL_LM")
 
         collect_source = True
         if os.environ.get(

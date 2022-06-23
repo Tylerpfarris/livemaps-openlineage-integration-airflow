@@ -57,7 +57,7 @@ class UnknownOperatorAttributeRunFacet(BaseFacet):
 
 
 @attr.s
-class LiveMapsPythonDecoratedFacet(BaseFacet):
+class PythonDecoratedFacet(BaseFacet):
     """
     Facet that represents metadata relevant to LiveMaps Graph UI.
     :param database: The database type/name

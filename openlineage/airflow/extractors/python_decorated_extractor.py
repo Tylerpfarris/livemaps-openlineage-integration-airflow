@@ -7,8 +7,8 @@ from typing import Callable, List, Optional
 from openlineage.airflow.extractors.base import BaseExtractor, TaskMetadata
 from openlineage.client.run import Dataset
 from openlineage.client.facet import SourceCodeJobFacet
-from openlineage.common.provider import (
-    LiveMapsPythonDecoratedFacet,
+from openlineage.airflow.facets import (
+    PythonDecoratedFacet,
 )
 
 
@@ -20,15 +20,11 @@ if not _DAG_NAMESPACE:
     _DAG_NAMESPACE = os.getenv("MARQUEZ_NAMESPACE", "default")
 
 
-class LiveMapsPythonDecoratedExtractor(BaseExtractor):
+class PythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
         return [
-            "_PythonOperator",
-            "PythonOperator",
-            "PostgresOperator",
             "_PythonDecoratedOperator",
-            "__PythonDecoratedOperator",
         ]
 
     def extract(self) -> Optional[TaskMetadata]:
@@ -76,7 +72,7 @@ class LiveMapsPythonDecoratedExtractor(BaseExtractor):
             )
 
         run_facet = {
-            "manualLineage": LiveMapsPythonDecoratedFacet(
+            "manualLineage": PythonDecoratedFacet(
                 database=self.operator.get_inlet_defs()[0]["database"],
                 cluster=self.operator.get_inlet_defs()[0]["cluster"],
                 connectionUrl=self.operator.get_inlet_defs()[0][
@@ -86,7 +82,7 @@ class LiveMapsPythonDecoratedExtractor(BaseExtractor):
                 source=self.operator.get_inlet_defs()[0]["source"],
             )
             if self.operator.get_inlet_defs()
-            else LiveMapsPythonDecoratedFacet(
+            else PythonDecoratedFacet(
                 database=self.operator.get_outlet_defs()[0]["database"],
                 cluster=self.operator.get_outlet_defs()[0]["cluster"],
                 connectionUrl=self.operator.get_outlet_defs()[0][

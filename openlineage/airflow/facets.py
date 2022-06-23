@@ -75,4 +75,4 @@ class PythonDecoratedFacet(BaseFacet):
 
     @staticmethod
     def _get_schema() -> str:
-        return GITHUB_LOCATION + "live-maps-python-decorated-facet.json"
+        return GITHUB_LOCATION + "python-decorated-facet.json"

@@ -27,7 +27,7 @@ class PythonDecoratedExtractor(BaseExtractor):
             "_PythonDecoratedOperator",
         ]
 
-    def extract_on_complete(self) -> Optional[TaskMetadata]:
+    def extract(self) -> Optional[TaskMetadata]:
         log.info(self)
 
         collect_source = True

@@ -10,16 +10,17 @@ from openlineage.client.facet import SourceCodeJobFacet
 from openlineage.airflow.facets import (
     PythonDecoratedFacet,
 )
-from openlineage.client.python.openlineage.common.constants import (
-    DEFAULT_NAMESPACE_NAME,
-)
+
+# from openlineage.client.python.openlineage.common.constants import (
+#    DEFAULT_NAMESPACE_NAME,
+# )
 
 log = logging.getLogger(__name__)
 
 
 _DAG_NAMESPACE = os.getenv("OPENLINEAGE_NAMESPACE", None)
 if not _DAG_NAMESPACE:
-    _DAG_NAMESPACE = os.getenv("MARQUEZ_NAMESPACE", DEFAULT_NAMESPACE_NAME)
+    _DAG_NAMESPACE = os.getenv("MARQUEZ_NAMESPACE", "default")
 
 
 class PythonDecoratedExtractor(BaseExtractor):

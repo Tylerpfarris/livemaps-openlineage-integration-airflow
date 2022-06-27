@@ -19,7 +19,7 @@ class PythonExtractor(BaseExtractor):
     """
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
-        return ["PythonOperator"]
+        return ["PythonOperator", "_PythonDecoratedOperator"]
 
     def extract(self) -> Optional[TaskMetadata]:
         collect_source = True

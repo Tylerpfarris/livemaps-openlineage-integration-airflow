@@ -43,20 +43,21 @@ class PythonExtractor(BaseExtractor):
         
         collect_manual_lineage = True
         if os.environ.get(
-            "OPENLINEAGE_AIRFLOW_DISABLE_SOURCE_CODE", "False"
+            "OPENLINEAGE_COLLECT_MANUALLY", "False"
         ).lower() in ('true', '1', 't'):
             collect_manual_lineage = False
         
-        _inputs: Dict = {}
-        _outputs: Dict = {}
+        _inputs: List = []
+        #_outputs: Dict = {}
         if collect_manual_lineage:
-            _inputs ={attr: value
-                    for attr, value in self.operator.get_inlet_defs()}
-            _outputs ={attr: value
-                    for attr, value in self.operator.get_outlet_defs()}
+            _inputs = self.operator.get_inlet_defs()
+            #_inputs ={attr: value
+            #        for attr, value in self.operator.get_inlet_defs()}
+        #    _outputs ={attr: value
+        #            for attr, value in self.operator.get_outlet_defs()}
 
         log.info(_inputs)
-        log.info(_outputs)
+        #log.info(_outputs)
 
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
@@ -76,7 +77,7 @@ class PythonExtractor(BaseExtractor):
                     ]
                 )
             },
-            outputs=_outputs or None,
+            #outputs=_outputs or None,
             inputs=_inputs or None
             
         )

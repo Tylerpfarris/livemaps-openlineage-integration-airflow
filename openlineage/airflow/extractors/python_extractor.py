@@ -51,13 +51,13 @@ class PythonExtractor(BaseExtractor):
         _outputs: Dict = {}
         if collect_manual_lineage:
             _inputs ={attr: value
-                    for attr, value in self.operator.__dict__.get_inlet_defs()}
+                    for attr, value in self.operator.get_inlet_defs()}
             _outputs ={attr: value
-                    for attr, value in self.operator.__dict__.get_outlet_defs()}
+                    for attr, value in self.operator.get_outlet_defs()}
 
         log.info(_inputs)
         log.info(_outputs)
-        
+
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
             job_facets=job_facet,

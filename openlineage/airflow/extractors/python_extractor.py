@@ -40,6 +40,24 @@ class PythonExtractor(BaseExtractor):
                     source_code
                 )
             }
+        
+        collect_manual_lineage = True
+        if os.environ.get(
+            "OPENLINEAGE_AIRFLOW_DISABLE_SOURCE_CODE", "False"
+        ).lower() in ('true', '1', 't'):
+            collect_manual_lineage = False
+        
+        _inputs: Dict = {}
+        _outputs: Dict = {}
+        if collect_manual_lineage:
+            _inputs ={attr: value
+                    for attr, value in self.operator.__dict__.get_inlet_defs()}
+            _outputs ={attr: value
+                    for attr, value in self.operator.__dict__.get_outlet_defs()}
+
+        log.info(_inputs)
+        log.info(_outputs)
+        
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
             job_facets=job_facet,
@@ -57,7 +75,10 @@ class PythonExtractor(BaseExtractor):
                         )
                     ]
                 )
-            }
+            },
+            outputs=_outputs or None,
+            inputs=_inputs or None
+            
         )
 
     def get_source_code(self, callable: Callable) -> Optional[str]:

@@ -27,7 +27,6 @@ class PythonDecoratedExtractor(BaseExtractor):
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
         return [
-            "_PythonDecoratedOperator",
         ]
 
     def extract(self) -> Optional[TaskMetadata]:

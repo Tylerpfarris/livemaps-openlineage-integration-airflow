@@ -32,9 +32,9 @@ _extractors = list(
             try_import_from_string(
                 "openlineage.airflow.extractors.bash_extractor.BashExtractor"
             ),
-            try_import_from_string(
-                "openlineage.airflow.extractors.python_decorated_extractor.PythonDecoratedExtractor"
-            ),
+            #try_import_from_string(
+            #    "openlineage.airflow.extractors.python_decorated_extractor.PythonDecoratedExtractor"
+            #),
         ],
     )
 )

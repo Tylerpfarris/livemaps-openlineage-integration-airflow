@@ -47,10 +47,16 @@ class PythonExtractor(BaseExtractor):
         ).lower() in ('true', '1', 't'):
             collect_manual_lineage = False
         
-        _inputs: List = []
+        _inputs: List = self.operator.get_inlet_defs()
+        
+        for x in self.operator.get_inlet_defs():
+            log.info(x)
+            input_properties = x[1]
+            log.info(input_properties)
         #_outputs: Dict = {}
         if collect_manual_lineage:
-            _inputs = self.operator.get_inlet_defs()
+            #_inputs = self.operator.get_inlet_defs()
+            log.info("ENV WORKED~~~")
             #_inputs ={attr: value
             #        for attr, value in self.operator.get_inlet_defs()}
         #    _outputs ={attr: value
@@ -78,7 +84,7 @@ class PythonExtractor(BaseExtractor):
                 )
             },
             #outputs=_outputs or None,
-            inputs=_inputs or None
+            inputs=_inputs
             
         )
 

@@ -22,6 +22,8 @@ class PythonExtractor(BaseExtractor):
         return ["PythonOperator", "_PythonDecoratedOperator"]
 
     def extract(self) -> Optional[TaskMetadata]:
+        log.info(self)
+        log.info(self.operator.__dict__.items())
         collect_source = True
         if os.environ.get(
             "OPENLINEAGE_AIRFLOW_DISABLE_SOURCE_CODE", "False"

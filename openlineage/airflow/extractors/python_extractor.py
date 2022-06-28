@@ -50,10 +50,10 @@ class PythonExtractor(BaseExtractor):
         _inputs: List = self.operator.get_inlet_defs()
         
         input_properties: Dict = {}
-        
+
         for x in self.operator.__dict__.items():
             log.info(x)
-            if x.has_key('task_id'):
+            if 'task_id' in x:
                 input_properties=x
         
         log.info(input_properties)

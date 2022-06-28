@@ -48,20 +48,35 @@ class PythonExtractor(BaseExtractor):
         ).lower() in ('true', '1', 't'):
             collect_manual_lineage = True
         
-        _inputs: List = self.operator.get_inlet_defs() or None
-        _outputs: List = self.operator.get_outlet_defs() or None
+        #_inputs: List = self.operator.get_inlet_defs() or None
+        #_outputs: List = self.operator.get_outlet_defs() or None
         
-        input_properties: Dict = {}
-
-        for x in self.operator.__dict__.items():
-            if 'inlets' in x:
-                input_properties['inputs']=x
-            if 'task_id' in x:
-                input_properties['task_id'] = x
+        #input_properties: Dict = {}
+        #for x in self.operator.__dict__.items():
+        #    if 'inlets' in x:
+        #        input_properties['inputs']=x
+        #    if 'task_id' in x:
+        #        input_properties['task_id'] = x
         
-        log.info(input_properties)
+        #log.info(input_properties)
         #_outputs: Dict = {}
+        _inputs: List = []
+        _outputs: List = []
         if collect_manual_lineage:
+            if self.operator.get_inlet_defs():
+                _inputs = list(
+                map(
+                    self.extract_inlets_and_outlets,
+                    self.operator.get_inlet_defs(),
+                    )
+                )
+            if self.operator.get_outlet_defs():
+                _outputs = list(
+                map(
+                    self.extract_inlets_and_outlets,
+                    self.operator.get_outlet_defs(),
+                    )
+                )
             #_inputs = self.operator.get_inlet_defs()
             log.info("ENV WORKED~~~")
             #_inputs ={attr: value
@@ -91,8 +106,8 @@ class PythonExtractor(BaseExtractor):
                 )
             },
             #outputs=_outputs or None,
-            inputs=Dataset(namespace=_inputs[0]["database"],name=_inputs[0]["name"]) if _inputs else None,
-            outputs=Dataset(namespace=_outputs[0]["database"],name=_outputs[0]["name"]) if _outputs else None
+            inputs=_inputs,
+            outputs=_outputs
             
         )
 
@@ -105,3 +120,11 @@ class PythonExtractor(BaseExtractor):
         except OSError:
             log.exception(f"Can't get source code facet of PythonOperator {self.operator.task_id}")
         return None
+    
+
+    def extract_inlets_and_outlets(self, properties):
+        return Dataset(
+            namespace=properties.get("database"),
+            name=properties["name"],
+        )
+

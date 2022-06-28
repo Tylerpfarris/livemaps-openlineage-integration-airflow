@@ -91,8 +91,8 @@ class PythonExtractor(BaseExtractor):
                 )
             },
             #outputs=_outputs or None,
-            inputs=Dataset(namespace=_inputs[0]["database"],name=_inputs[0]["name"]) or None,
-            outputs=Dataset(namespace=_outputs[0]["database"],name=_outputs[0]["name"]) or None
+            inputs=Dataset(namespace=_inputs[0]["database"],name=_inputs[0]["name"]) if _inputs else None,
+            outputs=Dataset(namespace=_outputs[0]["database"],name=_outputs[0]["name"]) if _outputs else None
             
         )
 

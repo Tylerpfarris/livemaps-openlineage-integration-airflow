@@ -6,6 +6,7 @@ from typing import Optional, List, Callable, Dict
 from openlineage.airflow.extractors.base import BaseExtractor, TaskMetadata
 from openlineage.airflow.facets import UnknownOperatorAttributeRunFacet, UnknownOperatorInstance
 from openlineage.client.facet import SourceCodeJobFacet
+from openlineage.client.run import Dataset
 
 
 log = logging.getLogger(__name__)
@@ -47,7 +48,8 @@ class PythonExtractor(BaseExtractor):
         ).lower() in ('true', '1', 't'):
             collect_manual_lineage = True
         
-        _inputs: List = self.operator.get_inlet_defs()
+        _inputs: List = self.operator.get_inlet_defs() or None
+        _outputs: List = self.operator.get_outlet_defs() or None
         
         input_properties: Dict = {}
 
@@ -68,7 +70,7 @@ class PythonExtractor(BaseExtractor):
         #            for attr, value in self.operator.get_outlet_defs()}
 
         log.info(_inputs)
-        #log.info(_outputs)
+        log.info(_outputs)
 
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
@@ -89,7 +91,8 @@ class PythonExtractor(BaseExtractor):
                 )
             },
             #outputs=_outputs or None,
-            inputs=_inputs
+            inputs=Dataset(namespace=_inputs[0]["database"],name=_inputs[0]["name"]),
+            outputs=Dataset(namespace=_outputs[0]["database"],name=_outputs[0]["name"])
             
         )
 

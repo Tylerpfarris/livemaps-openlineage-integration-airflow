@@ -23,8 +23,6 @@ class PythonExtractor(BaseExtractor):
         return ["PythonOperator", "_PythonDecoratedOperator"]
 
     def extract(self) -> Optional[TaskMetadata]:
-        log.info(self)
-        log.info(self.operator.__dict__.items())
         collect_source = True
         if os.environ.get(
             "OPENLINEAGE_AIRFLOW_DISABLE_SOURCE_CODE", "False"
@@ -47,19 +45,7 @@ class PythonExtractor(BaseExtractor):
             "OPENLINEAGE_COLLECT_MANUALLY", "False"
         ).lower() in ('true', '1', 't'):
             collect_manual_lineage = True
-        
-        #_inputs: List = self.operator.get_inlet_defs() or None
-        #_outputs: List = self.operator.get_outlet_defs() or None
-        
-        #input_properties: Dict = {}
-        #for x in self.operator.__dict__.items():
-        #    if 'inlets' in x:
-        #        input_properties['inputs']=x
-        #    if 'task_id' in x:
-        #        input_properties['task_id'] = x
-        
-        #log.info(input_properties)
-        #_outputs: Dict = {}
+
         _inputs: List = []
         _outputs: List = []
         if collect_manual_lineage:
@@ -77,12 +63,7 @@ class PythonExtractor(BaseExtractor):
                     self.operator.get_outlet_defs(),
                     )
                 )
-            #_inputs = self.operator.get_inlet_defs()
-            log.info("ENV WORKED~~~")
-            #_inputs ={attr: value
-            #        for attr, value in self.operator.get_inlet_defs()}
-        #    _outputs ={attr: value
-        #            for attr, value in self.operator.get_outlet_defs()}
+
 
         log.info(_inputs)
         log.info(_outputs)
@@ -105,10 +86,8 @@ class PythonExtractor(BaseExtractor):
                     ]
                 )
             },
-            #outputs=_outputs or None,
             inputs=_inputs,
             outputs=_outputs
-            
         )
 
     def get_source_code(self, callable: Callable) -> Optional[str]:

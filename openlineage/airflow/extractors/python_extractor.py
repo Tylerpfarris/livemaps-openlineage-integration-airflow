@@ -123,8 +123,9 @@ class PythonExtractor(BaseExtractor):
     
 
     def extract_inlets_and_outlets(self, properties):
+        log.info(properties)
         return Dataset(
-            namespace=properties.get("database"),
+            namespace=properties["database"],
             name=properties["name"],
         )
 

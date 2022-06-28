@@ -127,5 +127,6 @@ class PythonExtractor(BaseExtractor):
         return Dataset(
             namespace=properties["database"],
             name=properties["name"],
+            facets=properties
         )
 

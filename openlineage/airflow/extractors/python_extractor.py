@@ -53,7 +53,7 @@ class PythonExtractor(BaseExtractor):
 
         for x in self.operator.__dict__.items():
             if 'inlets' in x:
-                input_properties=x
+                input_properties['inputs']=x
             if 'task_id' in x:
                 input_properties['task_id'] = x
         

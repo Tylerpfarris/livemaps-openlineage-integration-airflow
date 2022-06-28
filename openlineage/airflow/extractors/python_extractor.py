@@ -41,11 +41,11 @@ class PythonExtractor(BaseExtractor):
                 )
             }
         
-        collect_manual_lineage = True
+        collect_manual_lineage = False
         if os.environ.get(
             "OPENLINEAGE_COLLECT_MANUALLY", "False"
         ).lower() in ('true', '1', 't'):
-            collect_manual_lineage = False
+            collect_manual_lineage = True
         
         _inputs: List = self.operator.get_inlet_defs()
         

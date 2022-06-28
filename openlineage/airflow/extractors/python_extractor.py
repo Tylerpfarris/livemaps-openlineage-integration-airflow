@@ -52,9 +52,10 @@ class PythonExtractor(BaseExtractor):
         input_properties: Dict = {}
 
         for x in self.operator.__dict__.items():
-            log.info(x)
-            if 'task_id' in x:
+            if 'inlets' in x:
                 input_properties=x
+            if 'task_id' in x:
+                input_properties['task_id'] = x
         
         log.info(input_properties)
         #_outputs: Dict = {}

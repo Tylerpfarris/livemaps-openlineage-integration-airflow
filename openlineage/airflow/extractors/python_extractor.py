@@ -49,7 +49,7 @@ class PythonExtractor(BaseExtractor):
         
         _inputs: List = self.operator.get_inlet_defs()
         
-        for x in self.operator.get_inlet_defs():
+        for x in self.operator.__dict__.items():
             log.info(x)
             input_properties = x[1]
             log.info(input_properties)

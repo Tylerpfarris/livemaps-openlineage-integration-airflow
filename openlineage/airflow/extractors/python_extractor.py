@@ -49,10 +49,14 @@ class PythonExtractor(BaseExtractor):
         
         _inputs: List = self.operator.get_inlet_defs()
         
+        input_properties: Dict = {}
+        
         for x in self.operator.__dict__.items():
             log.info(x)
-            input_properties = x[1]
-            log.info(input_properties)
+            if x.has_key('task_id'):
+                input_properties=x
+        
+        log.info(input_properties)
         #_outputs: Dict = {}
         if collect_manual_lineage:
             #_inputs = self.operator.get_inlet_defs()

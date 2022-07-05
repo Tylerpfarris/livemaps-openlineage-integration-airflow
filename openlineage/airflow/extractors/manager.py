@@ -11,6 +11,7 @@ from openlineage.airflow.facets import (
     UnknownOperatorInstance,
 )
 from openlineage.airflow.utils import get_job_name
+from openlineage.client.run import Dataset
 
 log = logging.getLogger(__name__)
 class ExtractorManager:
@@ -42,10 +43,10 @@ class ExtractorManager:
                 self.log.debug(
                     f"Using extractor {extractor.__class__.__name__} {task_info}"
                 )
-                #if self.operator.get_inlet_defs() or self.operator.get_outlet_defs():
-                #    self.log.debug(
-                #        f"Inlets/ Outlets were defined but extractor {extractor.__class__.__name__} {task_info} lineage metadata is being used"
-                #    )
+                if task.get_inlet_defs() or task.get_outlet_defs():
+                    self.log.debug(
+                        f"Inputs/outputs were defined but {extractor.__class__.__name__} extractor's lineage metadata is being used"
+                    )
                 if complete:
                     task_metadata = extractor.extract_on_complete(task_instance)
                 else:
@@ -63,27 +64,31 @@ class ExtractorManager:
                 )
         else:
             self.log.warning(f"Unable to find an extractor. {task_info}")
-            self.log.info(self)
-            self.log.info(help(self))
-            self.log.info(task)
-            self.log.info(help(task))
-            self.log.info(dagrun)
-            self.log.info(help(dagrun))
+            if task.get_inlet_defs() or task.get_outlet_defs():
+                self.log.debug(
+                    "Inputs/ outputs were defined manually and no extractor was found that excepts the given operator, thus lineage meta data will be pulled from the provided input and output definitions."
+                )
+            #self.log.info(self)
+            #self.log.info(help(self))
+            #self.log.info(task)
+            #self.log.info(help(task))
+            #self.log.info(dagrun)
+            #self.log.info(help(dagrun))
             _inputs: List = []
             _outputs: List = []
 
-            if self.operator.get_inlet_defs():
+            if task.get_inlet_defs():
                 _inputs = list(
                 map(
                     self.extract_inlets_and_outlets,
-                    self.operator.get_inlet_defs(),
+                    task.get_inlet_defs(),
                     )
                 )
-            if self.operator.get_outlet_defs():
+            if task.get_outlet_defs():
                 _outputs = list(
                 map(
                     self.extract_inlets_and_outlets,
-                    self.operator.get_outlet_defs(),
+                    task.get_outlet_defs(),
                     )
                 )
 
@@ -121,3 +126,10 @@ class ExtractorManager:
             self.extractors[task.task_id] = extractor(task)
             return self.extractors[task.task_id]
         return None
+
+    def extract_inlets_and_outlets(self, properties):
+        return Dataset(
+            namespace=properties["database"],
+            name=properties["name"],
+            facets=properties
+        )

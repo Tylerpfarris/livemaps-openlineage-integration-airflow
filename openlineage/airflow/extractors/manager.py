@@ -64,7 +64,7 @@ class ExtractorManager:
                 )
         else:
             self.log.warning(f"Unable to find an extractor. {task_info}")
-            if task.get_inlet_defs() or task.get_outlet_defs():
+            if len(task.get_inlet_defs()) or len(task.get_outlet_defs()):
                 self.log.exception(
                     "Inputs/ outputs were defined manually and no extractor was found that excepts the given operator, thus lineage meta data will be pulled from the provided input and output definitions."
                 )

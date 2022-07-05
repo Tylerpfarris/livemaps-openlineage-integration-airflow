@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Optional, Type, List
 
 from openlineage.airflow.extractors import (
@@ -27,6 +28,11 @@ class ExtractorManager:
     def extract_metadata(
         self, dagrun, task, complete: bool = False, task_instance=None
     ) -> TaskMetadata:
+        collect_manual_lineage = False
+        if os.environ.get(
+                "OPENLINEAGE_EXPERIMENTAL_COLLECT_MANUAL_LINEAGE", "False"
+            ).lower() in ('true', '1', 't'):
+                collect_manual_lineage = True
         extractor = self._get_extractor(task)
         task_info = (
             f"task_type={task.__class__.__name__} "
@@ -42,7 +48,7 @@ class ExtractorManager:
                 self.log.debug(
                     f"Using extractor {extractor.__class__.__name__} {task_info}"
                 )
-                if len(task.get_inlet_defs()) or len(task.get_outlet_defs()):
+                if len(task.get_inlet_defs()) or len(task.get_outlet_defs()) and collect_manual_lineage:
                     self.log.exception(
                         f"Inputs/outputs were defined but {extractor.__class__.__name__} extractor's lineage metadata is being used"
                     )
@@ -63,29 +69,32 @@ class ExtractorManager:
                 )
         else:
             self.log.warning(f"Unable to find an extractor. {task_info}")
-            if len(task.get_inlet_defs()) or len(task.get_outlet_defs()):
-                self.log.warning(
-                    "Inputs/ outputs were defined manually and no extractor was found that excepts the given operator, thus lineage meta data will be pulled from the provided input and output definitions."
-                )
             _inputs: List = []
             _outputs: List = []
 
-            if task.get_inlet_defs():
-                _inputs = list(
-                map(
-                    self.extract_inlets_and_outlets,
-                    task.get_inlet_defs(),
+            if collect_manual_lineage:
+                if len(task.get_inlet_defs()) or len(task.get_outlet_defs()):
+                    self.log.warning(
+                        """Inputs/ outputs were defined manually and no extractor was found that excepts the given operator.
+                        Lineage metadata will be extracted from the provided inputs and/or outputs definitions."""
                     )
-                )
-                self.log.info(_inputs)
-            if task.get_outlet_defs():
-                _outputs = list(
-                map(
-                    self.extract_inlets_and_outlets,
-                    task.get_outlet_defs(),
+
+                if task.get_inlet_defs():
+                    _inputs = list(
+                    map(
+                        self.extract_inlets_and_outlets,
+                        task.get_inlet_defs(),
+                        )
                     )
-                )
-                self.log.info(_outputs)
+                    self.log.info(_inputs)
+                if task.get_outlet_defs():
+                    _outputs = list(
+                    map(
+                        self.extract_inlets_and_outlets,
+                        task.get_outlet_defs(),
+                        )
+                    )
+                    self.log.info(_outputs)
 
 
             # Only include the unkonwnSourceAttribute facet if there is no extractor

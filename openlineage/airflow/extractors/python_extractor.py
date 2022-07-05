@@ -20,7 +20,7 @@ class PythonExtractor(BaseExtractor):
     """
     @classmethod
     def get_operator_classnames(cls) -> List[str]:
-        return ["PythonOperator", "_PythonDecoratedOperator"]
+        return ["PythonOperator"]
 
     def extract(self) -> Optional[TaskMetadata]:
         collect_source = True
@@ -40,33 +40,32 @@ class PythonExtractor(BaseExtractor):
                 )
             }
         
-        collect_manual_lineage = False
-        if os.environ.get(
-            "OPENLINEAGE_COLLECT_MANUALLY", "False"
-        ).lower() in ('true', '1', 't'):
-            collect_manual_lineage = True
+        #collect_manual_lineage = False
+        #if os.environ.get(
+        #    "OPENLINEAGE_COLLECT_MANUALLY", "False"
+        #).lower() in ('true', '1', 't'):
+        #    collect_manual_lineage = True
 
-        _inputs: List = []
-        _outputs: List = []
-        if collect_manual_lineage:
-            if self.operator.get_inlet_defs():
-                _inputs = list(
-                map(
-                    self.extract_inlets_and_outlets,
-                    self.operator.get_inlet_defs(),
-                    )
-                )
-            if self.operator.get_outlet_defs():
-                _outputs = list(
-                map(
-                    self.extract_inlets_and_outlets,
-                    self.operator.get_outlet_defs(),
-                    )
-                )
+        #_inputs: List = []
+        #_outputs: List = []
+        #if collect_manual_lineage:
+        #    if self.operator.get_inlet_defs():
+        #        _inputs = list(
+        #        map(
+        #            self.extract_inlets_and_outlets,
+        #            self.operator.get_inlet_defs(),
+        #            )
+        #        )
+        #    if self.operator.get_outlet_defs():
+        #        _outputs = list(
+        #        map(
+        #            self.extract_inlets_and_outlets,
+        #            self.operator.get_outlet_defs(),
+        #            )
+        #        )
 
-
-        log.info(_inputs)
-        log.info(_outputs)
+        #log.info(_inputs)
+        #log.info(_outputs)
 
         return TaskMetadata(
             name=f"{self.operator.dag_id}.{self.operator.task_id}",
@@ -85,9 +84,10 @@ class PythonExtractor(BaseExtractor):
                         )
                     ]
                 )
-            },
-            inputs=_inputs,
-            outputs=_outputs
+            }
+            #,
+            #inputs=_inputs,
+            #outputs=_outputs
         )
 
     def get_source_code(self, callable: Callable) -> Optional[str]:
@@ -102,7 +102,6 @@ class PythonExtractor(BaseExtractor):
     
 
     def extract_inlets_and_outlets(self, properties):
-        log.info(properties)
         return Dataset(
             namespace=properties["database"],
             name=properties["name"],

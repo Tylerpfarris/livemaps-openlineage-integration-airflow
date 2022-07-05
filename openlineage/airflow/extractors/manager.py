@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Type
+from typing import Optional, Type, List
 
 from openlineage.airflow.extractors import (
     TaskMetadata,
@@ -12,7 +12,7 @@ from openlineage.airflow.facets import (
 )
 from openlineage.airflow.utils import get_job_name
 
-
+log = logging.getLogger(__name__)
 class ExtractorManager:
     """Class abstracting management of custom extractors."""
 
@@ -38,9 +38,14 @@ class ExtractorManager:
             # Extracting advanced metadata is only possible when extractor for particular operator
             # is defined. Without it, we can't extract any input or output data.
             try:
+
                 self.log.debug(
                     f"Using extractor {extractor.__class__.__name__} {task_info}"
                 )
+                if self.operator.get_inlet_defs() or self.operator.get_outlet_defs():
+                    self.log.debug(
+                        f"Inlets/ Outlets were defined but extractor {extractor.__class__.__name__} {task_info} lineage metadata is being used"
+                    )
                 if complete:
                     task_metadata = extractor.extract_on_complete(task_instance)
                 else:
@@ -58,6 +63,26 @@ class ExtractorManager:
                 )
         else:
             self.log.warning(f"Unable to find an extractor. {task_info}")
+            _inputs: List = []
+            _outputs: List = []
+
+            if self.operator.get_inlet_defs():
+                _inputs = list(
+                map(
+                    self.extract_inlets_and_outlets,
+                    self.operator.get_inlet_defs(),
+                    )
+                )
+            if self.operator.get_outlet_defs():
+                _outputs = list(
+                map(
+                    self.extract_inlets_and_outlets,
+                    self.operator.get_outlet_defs(),
+                    )
+                )
+
+            log.info(_inputs)
+            log.info(_outputs)
 
             # Only include the unkonwnSourceAttribute facet if there is no extractor
             return TaskMetadata(
@@ -75,6 +100,8 @@ class ExtractorManager:
                         ]
                     )
                 },
+                inputs=_inputs,
+                outputs=_outputs
             )
 
         return TaskMetadata(name=get_job_name(task))

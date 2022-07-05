@@ -42,10 +42,10 @@ class ExtractorManager:
                 self.log.debug(
                     f"Using extractor {extractor.__class__.__name__} {task_info}"
                 )
-                if self.operator.get_inlet_defs() or self.operator.get_outlet_defs():
-                    self.log.debug(
-                        f"Inlets/ Outlets were defined but extractor {extractor.__class__.__name__} {task_info} lineage metadata is being used"
-                    )
+                #if self.operator.get_inlet_defs() or self.operator.get_outlet_defs():
+                #    self.log.debug(
+                #        f"Inlets/ Outlets were defined but extractor {extractor.__class__.__name__} {task_info} lineage metadata is being used"
+                #    )
                 if complete:
                     task_metadata = extractor.extract_on_complete(task_instance)
                 else:
@@ -63,6 +63,12 @@ class ExtractorManager:
                 )
         else:
             self.log.warning(f"Unable to find an extractor. {task_info}")
+            self.log.info(self)
+            self.log.info(help(self))
+            self.log.info(task)
+            self.log.info(help(task))
+            self.log.info(dagrun)
+            self.log.info(help(dagrun))
             _inputs: List = []
             _outputs: List = []
 

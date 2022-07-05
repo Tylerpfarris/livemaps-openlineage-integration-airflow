@@ -84,6 +84,7 @@ class ExtractorManager:
                     task.get_inlet_defs(),
                     )
                 )
+                log.info(_inputs)
             if task.get_outlet_defs():
                 _outputs = list(
                 map(
@@ -91,9 +92,8 @@ class ExtractorManager:
                     task.get_outlet_defs(),
                     )
                 )
+                log.info(_outputs)
 
-            log.info(_inputs)
-            log.info(_outputs)
 
             # Only include the unkonwnSourceAttribute facet if there is no extractor
             return TaskMetadata(

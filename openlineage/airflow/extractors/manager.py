@@ -43,8 +43,8 @@ class ExtractorManager:
                 self.log.debug(
                     f"Using extractor {extractor.__class__.__name__} {task_info}"
                 )
-                if task.get_inlet_defs() or task.get_outlet_defs():
-                    self.log.debug(
+                if len(task.get_inlet_defs()) or len(task.get_outlet_defs()):
+                    self.log.exception(
                         f"Inputs/outputs were defined but {extractor.__class__.__name__} extractor's lineage metadata is being used"
                     )
                 if complete:
@@ -68,12 +68,6 @@ class ExtractorManager:
                 self.log.exception(
                     "Inputs/ outputs were defined manually and no extractor was found that excepts the given operator, thus lineage meta data will be pulled from the provided input and output definitions."
                 )
-            #self.log.info(self)
-            #self.log.info(help(self))
-            #self.log.info(task)
-            #self.log.info(help(task))
-            #self.log.info(dagrun)
-            #self.log.info(help(dagrun))
             _inputs: List = []
             _outputs: List = []
 

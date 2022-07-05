@@ -13,7 +13,6 @@ from openlineage.airflow.facets import (
 from openlineage.airflow.utils import get_job_name
 from openlineage.client.run import Dataset
 
-log = logging.getLogger(__name__)
 class ExtractorManager:
     """Class abstracting management of custom extractors."""
 
@@ -78,7 +77,7 @@ class ExtractorManager:
                     task.get_inlet_defs(),
                     )
                 )
-                log.info(_inputs)
+                self.log.info(_inputs)
             if task.get_outlet_defs():
                 _outputs = list(
                 map(
@@ -86,7 +85,7 @@ class ExtractorManager:
                     task.get_outlet_defs(),
                     )
                 )
-                log.info(_outputs)
+                self.log.info(_outputs)
 
 
             # Only include the unkonwnSourceAttribute facet if there is no extractor
